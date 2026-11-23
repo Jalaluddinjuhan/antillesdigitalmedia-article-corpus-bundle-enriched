@@ -28,41 +28,76 @@
       color: var(--text);
       line-height: 1.55;
     }
+    body.modal-open, body.sidebar-open {
+      overflow: hidden;
+    }
+
+    /* === Header === */
     header {
       background: var(--surface);
       border-bottom: 1px solid var(--border);
-      padding: 16px 24px;
+      padding: 12px 14px;
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 30;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
+      gap: 10px;
     }
     header h1 {
       margin: 0;
-      font-size: 1.15rem;
+      font-size: 1rem;
       font-weight: 700;
+      line-height: 1.25;
     }
     header .subtitle {
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       color: var(--muted);
+      margin-top: 2px;
     }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 1;
+    }
+    .filter-toggle {
+      display: none;
+      width: 40px;
+      height: 40px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      flex-shrink: 0;
+      font-size: 1.1rem;
+      padding: 0;
+    }
+    .header-text { min-width: 0; }
+
     .stats-bar {
       display: flex;
-      gap: 10px;
+      gap: 6px;
       flex-wrap: wrap;
+      width: 100%;
+      margin-top: 4px;
     }
     .stat-pill {
       background: var(--bg);
       border: 1px solid var(--border);
-      padding: 5px 11px;
+      padding: 4px 10px;
       border-radius: 999px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 600;
+      white-space: nowrap;
     }
+
+    /* === Layout === */
     .layout {
       max-width: 1400px;
       margin: 0 auto;
@@ -72,8 +107,14 @@
       padding: 20px 24px;
     }
     @media (max-width: 900px) {
-      .layout { grid-template-columns: 1fr; }
+      .layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 14px;
+      }
     }
+
+    /* === Sidebar / Filters === */
     .sidebar {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -83,85 +124,156 @@
       position: sticky;
       top: 82px;
     }
-    .filter-group { margin-bottom: 16px; }
+    .filter-group { margin-bottom: 14px; }
     .filter-group label {
       display: block;
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.04em;
       color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
     input[type="text"], select {
       width: 100%;
-      padding: 8px 10px;
+      padding: 9px 10px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      font-size: 0.9rem;
+      font-size: 0.92rem;
       background: #fff;
+      min-width: 0;
     }
+    /* iOS zoom prevention: inputs need >=16px font */
+    @media (max-width: 900px) {
+      input[type="text"], select, input[type="file"] {
+        font-size: 16px;
+      }
+    }
+
+    /* Mobile drawer behavior */
+    .sidebar-close { display: none; }
+    @media (max-width: 900px) {
+      .filter-toggle { display: inline-flex; }
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 88vw;
+        max-width: 360px;
+        z-index: 60;
+        border-radius: 0;
+        padding: 20px 16px;
+        overflow-y: auto;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 0 0 40px rgba(0,0,0,0.2);
+      }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 23, 42, 0.5);
+        z-index: 55;
+      }
+      .sidebar-backdrop.open { display: block; }
+      .sidebar-close {
+        display: inline-flex !important;
+        float: right;
+        margin-top: -8px;
+        margin-right: -4px;
+        width: 32px; height: 32px;
+        align-items: center; justify-content: center;
+        border: none; background: transparent;
+        font-size: 1.4rem; color: var(--muted);
+        cursor: pointer;
+      }
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 6px;
-      padding: 8px 12px;
+      padding: 9px 12px;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--surface);
-      font-size: 0.85rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
+      min-height: 40px;
     }
     .btn-primary {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
     }
-    .btn:hover { opacity: 0.92; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn:hover:not(:disabled) { opacity: 0.92; }
+
     .toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 14px;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
+    .toolbar #resultCount {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+    .toolbar .hint {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    /* === Article grid === */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
     }
+    @media (max-width: 480px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    }
+
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       transition: border-color 0.15s, box-shadow 0.15s;
       cursor: pointer;
+      min-width: 0;
     }
-    .card:hover {
+    .card:hover, .card:active {
       border-color: var(--primary);
       box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
     }
     .badges {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px;
+      gap: 5px;
       margin-bottom: 8px;
     }
     .badge {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 6px;
+      padding: 2px 7px;
+      border-radius: 5px;
       background: var(--bg);
       border: 1px solid var(--border);
       color: var(--muted);
+      white-space: nowrap;
     }
     .badge.clean { background: var(--green-soft); color: var(--green); border-color: transparent; }
     .badge.spam { background: var(--red-soft); color: var(--red); border-color: transparent; }
@@ -169,29 +281,36 @@
     .badge.dofollow { background: var(--amber-soft); color: var(--amber); border-color: transparent; }
     .card h3 {
       margin: 0 0 8px 0;
-      font-size: 0.98rem;
-      line-height: 1.38;
+      font-size: 0.95rem;
+      line-height: 1.35;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      word-break: break-word;
     }
     .card .url {
-      font-size: 0.78rem;
+      font-size: 0.76rem;
       color: var(--primary);
       word-break: break-all;
       margin-bottom: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
     }
     .card .anchor-preview {
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       color: var(--muted);
       background: var(--bg);
-      padding: 8px;
+      padding: 7px 9px;
       border-radius: 6px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
+      word-break: break-word;
     }
     .pagination {
       display: flex;
@@ -199,8 +318,10 @@
       align-items: center;
       gap: 10px;
       margin-top: 22px;
+      padding-bottom: 24px;
     }
-    /* Detail View / Reader Modal */
+
+    /* === Modal / Reader View === */
     .modal-backdrop {
       position: fixed;
       inset: 0;
@@ -210,6 +331,7 @@
       justify-content: center;
       padding: 20px;
       z-index: 50;
+      -webkit-overflow-scrolling: touch;
     }
     .modal-backdrop.open { display: flex; }
     .modal {
@@ -221,6 +343,7 @@
       border-radius: 14px;
       padding: 24px 28px;
       box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      position: relative;
     }
     .modal-header {
       display: flex;
@@ -231,6 +354,21 @@
       padding-bottom: 14px;
       margin-bottom: 16px;
     }
+    .modal-header > div:first-child {
+      min-width: 0;
+      flex: 1;
+    }
+    .modal-header h2 {
+      margin: 6px 0 0 0;
+      font-size: 1.1rem;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+    #closeModal {
+      flex-shrink: 0;
+      min-width: 36px;
+      padding: 6px 10px;
+    }
     .meta-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -239,35 +377,104 @@
       padding: 12px;
       border-radius: 10px;
       margin-bottom: 16px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
     }
     .meta-grid div span {
       display: block;
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       color: var(--muted);
       text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    .meta-grid div strong {
+      word-break: break-word;
+      font-size: 0.84rem;
     }
     .reader-box {
       background: #fcfcfd;
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 16px;
-      font-size: 0.94rem;
+      padding: 14px;
+      font-size: 0.92rem;
       white-space: pre-wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+    }
+    .modal-footer-actions {
+      margin-top: 16px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    /* Mobile modal = full-screen sheet */
+    @media (max-width: 768px) {
+      .modal-backdrop {
+        padding: 0;
+        align-items: stretch;
+      }
+      .modal {
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+        border-radius: 0;
+        padding: 14px 14px 80px 14px;
+        /* Extra bottom padding for sticky CTA */
+      }
+      .modal-header {
+        position: sticky;
+        top: -14px;
+        background: var(--surface);
+        z-index: 5;
+        margin-top: -14px;
+        padding-top: 14px;
+        margin-bottom: 12px;
+      }
+      .modal-footer-actions {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: 10px 14px;
+        margin: 0;
+        z-index: 6;
+        /* Make CTA full-width on mobile */
+      }
+      .modal-footer-actions .btn {
+        flex: 1;
+      }
+      /* Collapse meta-grid on mobile for less scrolling */
+      .meta-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .modal-header h2 { font-size: 1rem; }
+      header h1 { font-size: 0.95rem; }
+    }
+    @media (max-width: 380px) {
+      .meta-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <h1>Antilles Digital Media — Article Corpus</h1>
-      <div class="subtitle">654 Backlink Articles Extracted from Ahrefs Export</div>
+    <div class="header-left">
+      <button class="filter-toggle" id="filterToggle" aria-label="Open filters">☰</button>
+      <div class="header-text">
+        <h1>Antilles Digital Media — Article Corpus</h1>
+        <div class="subtitle">654 Backlink Articles Extracted from Ahrefs Export</div>
+      </div>
     </div>
     <div class="stats-bar" id="statsBar"></div>
   </header>
 
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
   <div class="layout">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-close" id="sidebarClose" aria-label="Close filters">✕</button>
       <div class="filter-group">
         <label>Search Title / URL / Anchor</label>
         <input type="text" id="searchInput" placeholder="e.g. dental, SEO, orthodontics..." />
@@ -303,20 +510,22 @@
           <option value="id_asc">CSV Order (#1 → #654)</option>
         </select>
       </div>
-      <div class="filter-group">
-        <label>Load Different JSON (Optional)</label>
-        <input type="file" id="jsonUpload" accept=".json" style="font-size:0.8rem;" />
-        <div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">
-          228 of 654 article bodies are already embedded in this file (scraped from live URLs). Upload a different <code>articles-corpus-enriched.json</code> to replace.
-        </div>
-      </div>
       <button class="btn btn-primary" style="width:100%;" id="exportBtn">Export Filtered JSON</button>
+      <details style="margin-top:14px;border-top:1px solid var(--border);padding-top:14px;">
+        <summary style="font-size:0.78rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em;color:var(--muted);cursor:pointer;">Load Different JSON</summary>
+        <div style="margin-top:8px;">
+          <input type="file" id="jsonUpload" accept=".json" style="font-size:0.8rem;width:100%;" />
+          <div style="font-size:0.72rem;color:var(--muted);margin-top:6px;line-height:1.45;">
+            228 of 654 article bodies are already embedded in this file (scraped from live URLs). Upload a different <code>articles-corpus-enriched.json</code> to replace.
+          </div>
+        </div>
+      </details>
     </aside>
 
     <main>
       <div class="toolbar">
-        <div id="resultCount" style="font-weight:600;font-size:0.92rem;"></div>
-        <div style="font-size:0.82rem;color:var(--muted);">Click any card to inspect full metadata, context &amp; article text</div>
+        <div id="resultCount"></div>
+        <div class="hint">Click any card to inspect full metadata, context &amp; article text</div>
       </div>
       <div class="grid" id="cardsGrid"></div>
       <div class="pagination" id="pagination"></div>
@@ -328,20 +537,20 @@
       <div class="modal-header">
         <div>
           <div class="badges" id="modalBadges"></div>
-          <h2 id="modalTitle" style="margin:6px 0 0 0;font-size:1.15rem;"></h2>
+          <h2 id="modalTitle"></h2>
         </div>
-        <button class="btn" id="closeModal">✕ Close</button>
+        <button class="btn" id="closeModal" aria-label="Close">✕</button>
       </div>
       <div class="meta-grid" id="modalMeta"></div>
       <div style="margin-bottom:14px;">
-        <strong>Backlink Context &amp; Anchor:</strong>
+        <strong style="font-size:0.88rem;">Backlink Context &amp; Anchor:</strong>
         <div class="reader-box" id="modalContext" style="margin-top:6px;"></div>
       </div>
       <div id="modalBodySection">
-        <strong>Article Content / Body Text:</strong>
+        <strong style="font-size:0.88rem;">Article Content / Body Text:</strong>
         <div class="reader-box" id="modalBody" style="margin-top:6px;"></div>
       </div>
-      <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+      <div class="modal-footer-actions">
         <a id="modalVisitBtn" href="#" target="_blank" rel="noopener" class="btn btn-primary" style="text-decoration:none;">Open Original Article ↗</a>
       </div>
     </div>
@@ -477,6 +686,10 @@
         : errMsg;
       document.getElementById('modalVisitBtn').href = item.url;
       document.getElementById('modalBackdrop').classList.add('open');
+      document.body.classList.add('modal-open');
+      // Scroll modal to top so user sees title first
+      const modal = document.querySelector('.modal');
+      if (modal) modal.scrollTop = 0;
     }
 
     function escapeHtml(str) {
@@ -485,17 +698,51 @@
       }[m]));
     }
 
-    document.getElementById('closeModal').onclick = () => {
+    function closeModal() {
       document.getElementById('modalBackdrop').classList.remove('open');
+      document.body.classList.remove('modal-open');
       history.replaceState(null, '', location.pathname);
-    };
-    document.getElementById('modalBackdrop').onclick = (e) => {
-      if (e.target.id === 'modalBackdrop') document.getElementById('closeModal').click();
-    };
+    }
 
+    function openSidebar() {
+      document.getElementById('sidebar').classList.add('open');
+      document.getElementById('sidebarBackdrop').classList.add('open');
+      document.body.classList.add('sidebar-open');
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarBackdrop').classList.remove('open');
+      document.body.classList.remove('sidebar-open');
+    }
+
+    document.getElementById('closeModal').onclick = closeModal;
+    document.getElementById('modalBackdrop').onclick = (e) => {
+      if (e.target.id === 'modalBackdrop') closeModal();
+    };
+    document.getElementById('filterToggle').onclick = openSidebar;
+    document.getElementById('sidebarClose').onclick = closeSidebar;
+    document.getElementById('sidebarBackdrop').onclick = closeSidebar;
+
+    // Close sidebar when user applies filters (selects/search) on mobile
+    // — only for select changes, not text input (which may want multiple keystrokes)
+    [spamFilter, typeFilter, followFilter, sortFilter].forEach(el => {
+      el.addEventListener('change', () => {
+        if (window.innerWidth <= 900) {
+          setTimeout(closeSidebar, 200);
+        }
+      });
+    });
     [searchInput, spamFilter, typeFilter, followFilter, sortFilter].forEach(el => {
       el.addEventListener('input', applyFilters);
       el.addEventListener('change', applyFilters);
+    });
+
+    // ESC closes whatever is open
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (document.getElementById('modalBackdrop').classList.contains('open')) closeModal();
+        else if (document.getElementById('sidebar').classList.contains('open')) closeSidebar();
+      }
     });
 
     document.getElementById('exportBtn').onclick = () => {
